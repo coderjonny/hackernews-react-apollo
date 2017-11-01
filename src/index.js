@@ -12,6 +12,8 @@ import { ApolloProvider } from 'react-apollo';
 
 import gql from 'graphql-tag';
 
+import { BrowserRouter } from 'react-router-dom'
+
 const httpLink = createHttpLink({
     uri: 'https://api.graph.cool/simple/v1/cj9g4efez5cec0129dh1nsc2p',
   })
@@ -28,9 +30,11 @@ client.query({ query: gql`{
 }` }).then(console.log);
 
 ReactDOM.render(
-  <ApolloProvider client={client}>
-    <App {...client}/>
-  </ApolloProvider>
+  <BrowserRouter>
+    <ApolloProvider client={client}>
+      <App {...client}/>
+    </ApolloProvider>
+  </BrowserRouter>
   , document.getElementById('root')
 )
 registerServiceWorker()

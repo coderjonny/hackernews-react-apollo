@@ -38,7 +38,6 @@ class CreateLink extends Component {
   }
 
   _createLink = async () => {
-    console.log(this.props.createLinkMutation);
     const { description, url } = this.state
     await this.props.createLinkMutation({
       variables: {
@@ -46,6 +45,7 @@ class CreateLink extends Component {
         url
       }
     })
+    this.props.history.push('/')
   }
 
 }
@@ -66,5 +66,9 @@ const CREATE_LINK_MUTATION = gql`
   }
 `
 
+const query = gql`{ allLinks { description, id, url } }`
+
 // 3
-export default graphql(CREATE_LINK_MUTATION, { name: 'createLinkMutation' })(CreateLink)
+export default graphql(CREATE_LINK_MUTATION,
+                       { name: 'createLinkMutation',
+                       })(CreateLink)
