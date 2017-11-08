@@ -13,6 +13,10 @@ type User @model {
   createdAt: DateTime!
   id: ID! @isUnique
   updatedAt: DateTime!
+  email: String @isUnique
+  password: String
+  name: String!
+  links: [Link!]! @relation(name: 'UsersLinks')
 }
 
 type Link @model {
@@ -21,4 +25,5 @@ type Link @model {
   updatedAt: DateTime!
   url: String!
   description: String!
+  postedBy: User @relation(name: 'UsersLink')
 }

@@ -10,24 +10,34 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { createHttpLink } from 'apollo-link-http';
 import { ApolloProvider } from 'react-apollo';
 
+import { ApolloLink } from 'apollo-link';
+import { GC_AUTH_TOKEN } from './constants'
+
 import gql from 'graphql-tag';
 
 import { BrowserRouter } from 'react-router-dom'
 
 const httpLink = createHttpLink({
-    uri: 'https://api.graph.cool/simple/v1/cj9g4efez5cec0129dh1nsc2p',
-  })
+  uri: 'https://api.graph.cool/simple/v1/cj9g4efez5cec0129dh1nsc2p',
+})
+
+const middlewareLink = new ApolloLink((operation, forward) => {
+  operation.setContext({
+    headers: {
+      authorization: localStorage.getItem(GC_AUTH_TOKEN) || null
+    }
+  });
+  console.log('operation', operation.getContext());
+  return forward(operation)
+})
+
+const link = middlewareLink.concat(httpLink);
 
 const client = new ApolloClient({
-  link: httpLink,
-  cache: new InMemoryCache()
+  link: link,
+  cache: new InMemoryCache(),
 });
 
-client.query({ query: gql`{
-  allLinks {
-    description
-	}
-}` }).then(console.log);
 
 ReactDOM.render(
   <BrowserRouter>
