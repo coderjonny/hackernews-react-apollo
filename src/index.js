@@ -13,8 +13,6 @@ import { ApolloProvider } from 'react-apollo';
 import { ApolloLink } from 'apollo-link';
 import { GC_AUTH_TOKEN } from './constants'
 
-import gql from 'graphql-tag';
-
 import { BrowserRouter } from 'react-router-dom'
 
 const httpLink = createHttpLink({
@@ -27,7 +25,6 @@ const middlewareLink = new ApolloLink((operation, forward) => {
       authorization: localStorage.getItem(GC_AUTH_TOKEN) || null
     }
   });
-  console.log('operation', operation.getContext());
   return forward(operation)
 })
 

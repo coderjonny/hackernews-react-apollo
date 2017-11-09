@@ -51,12 +51,36 @@ class CreateLink extends Component {
         description,
         url,
         postedById
+      },
+      update: (store, { data: { createLink } }) => {
+        const data = store.readQuery({ query: ALL_LINKS_QUERY_UPDATE})
+        data.allLinks.splice(0,0,createLink)
+        store.writeQuery({
+          query: ALL_LINKS_QUERY_UPDATE,
+          data
+        })
+        console.log('update createLink', createLink, data);
       }
     })
+
     this.props.history.push('/')
   }
 
 }
+
+const ALL_LINKS_QUERY_UPDATE = gql`{
+    allLinks {
+      id
+      description
+      url
+      createdAt
+      postedBy {
+        id
+        name
+      }
+    }
+}`
+
 
 // 1
 const CREATE_LINK_MUTATION = gql`
@@ -77,8 +101,6 @@ const CREATE_LINK_MUTATION = gql`
     }
   }
 `
-
-const query = gql`{ allLinks { description, id, url } }`
 
 // 3
 export default graphql(CREATE_LINK_MUTATION,

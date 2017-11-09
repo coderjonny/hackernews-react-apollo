@@ -7,7 +7,6 @@ import gql from 'graphql-tag';
 
 class Link extends Component {
   render() {
-    console.log('Link props -------', this.props);
     const userId = localStorage.getItem(GC_USER_ID)
     const link = this.props.link
 
@@ -23,9 +22,9 @@ class Link extends Component {
           }
         </div>
         <div className='ml1'>
-          <div>{this.props.link.description} ({this.props.link.url})</div>
+          <div>{link.description} ({link.url})</div>
           <div className='f6 lh-copy gray'>
-            {this.props.link.votes.length} votes | by {this.props.link.postedBy ? this.props.link.postedBy.name : 'Unknown'} {timeDifferenceForDate(this.props.link.createdAt)}
+            {link.votes.length} votes | by {link.postedBy ? link.postedBy.name : 'Unknown'} {timeDifferenceForDate(this.props.link.createdAt)}
           </div>
         </div>
       </div>
@@ -35,7 +34,44 @@ class Link extends Component {
   _voteForLink = async () => {
     const userId = localStorage.getItem(GC_USER_ID)
     const voterIds = this.props.link.votes.map( v => v.user.id )
-    console.log(userId, voterIds);
+
+    if (voterIds.includes(userId)) {
+      return
+    }
+
+    const linkId = this.props.link.id;
+    await this.props.createVoteMutation({
+      variables: {
+        userId,
+        linkId
+      },
+      update: (store, { data: { createVote } }) => {
+        this.props.updateStoreAfterVote(store, createVote, linkId)
+      },
+      optimisticResponse: {
+        createVote: {
+          id: -1,
+          link: {
+            votes: [
+              {
+                id: -1,
+                user: {
+                  id: userId,
+                  __typename: "User"
+                },
+                __typename: "Vote"
+              }
+            ],
+            __typename: "Link"
+          },
+          user: {
+            id: userId,
+            __typename: "User"
+          },
+          __typename: "Vote"
+        }
+      }
+    })
   }
 }
 
