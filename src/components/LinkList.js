@@ -14,12 +14,17 @@ class LinkList extends Component {
     if (this.props.allLinksQuery && this.props.allLinksQuery.error) {
       return <div>Error</div>
     }
-    const linksToRender = this.props.allLinksQuery.allLinks
+    let linksToRender = this.props.allLinksQuery.allLinks
+
+    //make lsit mutable and then sort by votes
+    let sorted = linksToRender.map( l => l).sort(
+      (a,b) => (b.votes.length - a.votes.length)
+    )
 
     return (
       <div>
         {
-          linksToRender.map( (link, index) => (
+          sorted.map( (link, index) => (
             <Link
               key={link.id}
               updateStoreAfterVote={this._updateCacheAfterVote}
